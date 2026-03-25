@@ -1,24 +1,31 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import '@/global.css';
+import { Slot } from 'expo-router';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function InnerLayout() {
+  const { themeMode } = useTheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <GluestackUIProvider mode={themeMode}>
+      <SafeAreaProvider>
+        <Slot />
+      </SafeAreaProvider>
+    </GluestackUIProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <ThemeProvider>
+        <InnerLayout />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
